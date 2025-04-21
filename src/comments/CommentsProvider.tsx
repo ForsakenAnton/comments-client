@@ -3,40 +3,45 @@ import CommentsContext from "./commentsContext";
 import { apiPaths } from "../config/apiPaths";
 import CommentsProviderValue from "../interfaces/commentsProviderValue";
 import CommentGetDto from "../interfaces/commentGet";
+import { useImmer } from "use-immer";
 
 interface CommentsProviderProps {
   children: ReactNode;
 }
 
 function CommentsProvider({ children }: Readonly<CommentsProviderProps>) {
-  const [comments, setComments] = useState([] as CommentGetDto[]);
+  const [comments, setComments] = useImmer<CommentGetDto[]>([]); // Immer !!!
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(false);
 
-  const fetchComments = async () => {
-    setLoading(true);
-    setFetchError(false);
+  useEffect(() => {
+    const fetchComments = async () => {
+      setLoading(true);
+      setFetchError(false);
 
-    try {
-      const response = await fetch(apiPaths.getAllComments);
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        setComments(data);
-      } else {
-        console.log(response.status);
+      try {
+        const response = await fetch(apiPaths.getParentComments);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+
+          setComments(() => {
+            return data;
+          });
+        } else {
+          console.log(response.status);
+        }
+      } catch (error) {
+        console.log(error);
+        setFetchError(true);
       }
-    } catch (error) {
-      console.log(error);
-      setFetchError(true);
+
+      setLoading(false);
     }
 
-    setLoading(false);
-  }
 
-  useEffect(() => {
     fetchComments();
-  }, []);
+  }, [setComments]);
 
 
   const commentsProviderValue: CommentsProviderValue = useMemo(
@@ -50,7 +55,7 @@ function CommentsProvider({ children }: Readonly<CommentsProviderProps>) {
         setFetchError
       }
     },
-    [comments, loading, fetchError]);
+    [comments, loading, fetchError, setComments]);
 
   return (
     <CommentsContext.Provider value={commentsProviderValue}>

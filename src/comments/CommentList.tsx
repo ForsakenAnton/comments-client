@@ -1,12 +1,21 @@
+import { FaWheelchair } from "react-icons/fa";
 import { useCommentsContext } from "./commentsContext";
 import CommentThread from "./CommentThread";
 
 function CommentList() {
-  const { comments } = useCommentsContext();
+  const { comments, loading, fetchError } = useCommentsContext();
 
   return (
-    // TODO sorting root comments
-    <CommentThread comments={comments} />
+    <>
+      {loading && <div className="spinner" aria-label="Loading spinner"></div>}
+      {fetchError && (
+        <p className="error-message">
+          <FaWheelchair /> Error loading comments. Please try again later.
+          <button onClick={() => window.location.reload()}>Reload the page</button>
+        </p>
+      )}
+      {!loading && !fetchError && <CommentThread comments={comments} />}
+    </>
   );
 }
 
