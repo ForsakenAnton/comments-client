@@ -3,7 +3,7 @@ import { useCommentsContext } from "./commentsContext";
 
 function Pagination() {
   const { paginationMetadata, setPaginationMetadata } = useCommentsContext();
-  const { currentPage, pageSize, totalPages, totalCount, hasNext, hasPrevious } = paginationMetadata;
+  const { currentPage, pageSize, totalPages, /*totalCount*/ hasNext, hasPrevious } = paginationMetadata;
   const maxPagesOnTheLeftOrRight = 2;
 
   const pages: number[] = [];

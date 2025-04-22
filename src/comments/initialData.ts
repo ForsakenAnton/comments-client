@@ -1,5 +1,6 @@
 import CommentsProviderValue from "../interfaces/commentsProviderValue";
-import PaginationMetadata from "../interfaces/PaginationMetadata";
+import OrderByButton from "../interfaces/orderByButton";
+import PaginationMetadata from "../interfaces/paginationMetadata";
 
 export const initialPaginationMetadata: PaginationMetadata = {
   currentPage: 1,
@@ -19,4 +20,24 @@ export const initialCommentsProviderValue: CommentsProviderValue = {
   setFetchError: () => { },
   paginationMetadata: initialPaginationMetadata,
   setPaginationMetadata: () => { },
+  orderBy: "date desc",
+  setOrderBy: () => { },
 };
+
+export const initialOrderByButtons: OrderByButton[] = [
+  {
+    name: "Date",
+    order: ["date", "date desc"],
+    isDescending: true
+  },
+  {
+    name: "User name",
+    order: ["user_name", "user_name desc"],
+    isDescending: true
+  },
+  {
+    name: "User email",
+    order: ["user_email", "user_email desc"],
+    isDescending: true
+  },
+];

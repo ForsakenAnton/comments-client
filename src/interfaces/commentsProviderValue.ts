@@ -1,5 +1,6 @@
+import OrderBy from "../types/orderBy";
 import CommentGetDto from "./commentGet";
-import PaginationMetadata from "./PaginationMetadata";
+import PaginationMetadata from "./paginationMetadata";
 
 export default interface CommentsProviderValue {
   comments: CommentGetDto[];
@@ -10,4 +11,6 @@ export default interface CommentsProviderValue {
   setFetchError: React.Dispatch<React.SetStateAction<boolean>>;
   paginationMetadata: PaginationMetadata;
   setPaginationMetadata: React.Dispatch<React.SetStateAction<PaginationMetadata>>;
+  orderBy: OrderBy;
+  setOrderBy: React.Dispatch<React.SetStateAction<OrderBy>>;
 }
