@@ -6,6 +6,7 @@ import { apiPaths, rootImageFilesPath, rootTextFilesPath } from '../config/apiPa
 import { FaRegFileAlt, FaWheelchair } from 'react-icons/fa';
 import CommentThread from './CommentThread';
 import { useCommentsContext } from './commentsContext';
+import CommentForm from './CommentForm';
 
 interface CommentProps {
   comment: CommentGetDto
@@ -17,6 +18,8 @@ function Comment({ comment }: Readonly<CommentProps>) {
   const [isOpenChildrenSection, setIsOpenChildrenSection] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(false);
+
+  const [showForm, setShowForm] = useState(false);
 
   const disableTogglingCommentsClassName = comment.childrenCommentsCount === 0
     ? "disable"
@@ -137,6 +140,15 @@ function Comment({ comment }: Readonly<CommentProps>) {
           </div>
         )}
       </div>
+
+      <button
+        className='reply-btn'
+        onClick={() => setShowForm(!showForm)}
+      >
+        {showForm ? "Cancel" : "Reply"}
+      </button>
+
+      {showForm && <CommentForm parentId={comment.id} />}
 
       {loading && <div className="spinner" aria-label="Loading spinner"></div>}
       {fetchError && (

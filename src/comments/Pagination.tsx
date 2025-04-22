@@ -3,23 +3,29 @@ import { useCommentsContext } from "./commentsContext";
 
 function Pagination() {
   const { paginationMetadata, setPaginationMetadata } = useCommentsContext();
-  const { currentPage, pageSize, totalPages, /*totalCount*/ hasNext, hasPrevious } = paginationMetadata;
+  const { currentPage, pageSize, totalPages, hasNext, hasPrevious } = paginationMetadata;
   const maxPagesOnTheLeftOrRight = 2;
 
-  const pages: number[] = [];
+  const pages: (number | "...")[] = [];
 
-  const startPage = Math.max(1, currentPage - maxPagesOnTheLeftOrRight);
-  const endPage = Math.min(totalPages, currentPage + maxPagesOnTheLeftOrRight);
+  const startPage = Math.max(2, currentPage - maxPagesOnTheLeftOrRight);
+  const endPage = Math.min(totalPages - 1, currentPage + maxPagesOnTheLeftOrRight);
 
-  if (startPage > 1) {
-    pages.push(1);
+  pages.push(1);
+
+  if (startPage > 2) {
+    pages.push("...");
   }
 
   for (let i = startPage; i <= endPage; i++) {
     pages.push(i);
   }
 
-  if (endPage < totalPages) {
+  if (endPage < totalPages - 1) {
+    pages.push("...");
+  }
+
+  if (totalPages > 1) {
     pages.push(totalPages);
   }
 
@@ -33,24 +39,28 @@ function Pagination() {
           })
         }}
         disabled={!hasPrevious}
-        className="pagination-button"
+        className={`pagination-button ${!hasPrevious ? "disabled" : ""}`}
       >
         <GrPrevious />
       </button>
 
-      {pages.map((page) => (
-        <button
-          key={page}
-          onClick={() => {
-            setPaginationMetadata({
-              ...paginationMetadata,
-              currentPage: page
-            })
-          }}
-          className={`pagination-button ${page === currentPage ? "active" : ""}`}
-        >
-          {page}
-        </button>
+      {pages.map((page, index) => (
+        typeof page === "number" ? (
+          <button
+            key={`${page}-${index}`}
+            onClick={() => {
+              setPaginationMetadata({
+                ...paginationMetadata,
+                currentPage: page
+              })
+            }}
+            className={`pagination-button ${page === currentPage ? "active" : ""}`}
+          >
+            {page}
+          </button>
+        ) : (
+          <span key={`${page}-${index}`} className="pagination-ellipsis">...</span>
+        )
       ))}
 
       <button
@@ -61,7 +71,7 @@ function Pagination() {
           })
         }}
         disabled={!hasNext}
-        className="pagination-button"
+        className={`pagination-button ${!hasNext ? "disabled" : ""}`}
       >
         <GrNext />
       </button>

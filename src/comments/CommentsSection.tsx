@@ -5,7 +5,6 @@ import Sorting from "./Sorting";
 function CommentsSection() {
   return (
     <>
-      {/* TODO AddCommentForm */}
       <Sorting />
       <CommentList />
       <Pagination />

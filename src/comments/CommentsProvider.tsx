@@ -53,7 +53,6 @@ function CommentsProvider({ children }: Readonly<CommentsProviderProps>) {
         setLoading(false);
       }
 
-
       fetchComments();
     },
     [
