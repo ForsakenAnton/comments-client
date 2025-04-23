@@ -4,7 +4,6 @@ interface ButtonProps {
   onClick?: () => void,
   className?: string,
   disabled?: boolean,
-  key?: null | string | number
 }
 
 function Button({
@@ -12,14 +11,12 @@ function Button({
   onClick,
   className = "",
   disabled = false,
-  key
 }: Readonly<ButtonProps>) {
   return (
     <button
       className={className}
       onClick={onClick}
       disabled={disabled}
-      key={key}
     >
       {children}
     </button>

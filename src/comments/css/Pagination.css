@@ -20,7 +20,7 @@
 }
 
 .pagination-button:hover {
-  background-color: var(--sky-300);
+  background-color: var(--sky-500);
 }
 
 .pagination-button.active {

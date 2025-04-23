@@ -9,6 +9,9 @@ import { useCommentsContext } from './commentsContext';
 import CommentForm from './CommentForm';
 import Button from '../components/Button';
 
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+
 import './css/Comment.css';
 
 interface CommentProps {
@@ -24,16 +27,38 @@ function Comment({ comment }: Readonly<CommentProps>) {
 
   const [showForm, setShowForm] = useState(false);
 
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [textFileContent, setTextFileContent] = useState<string | null>(null);
+  const [isTextModalOpen, setIsTextModalOpen] = useState(false);
+
   const disableTogglingCommentsClassName = comment.childrenCommentsCount === 0
     ? "disabled"
     : "";
+
+  const handleImageClick = () => {
+    setLightboxOpen(true);
+  };
+
+  const openTextFileModal = async () => {
+    try {
+      const response = await fetch(`${rootTextFilesPath}/${comment.textFileName}`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const text = await response.text();
+      setTextFileContent(text);
+      setIsTextModalOpen(true);
+    } catch (err) {
+      console.error("Failed to load text file:", err);
+    }
+  };
+
 
   const loadChildrenComments = async () => {
     if (isOpenChildrenSection) {
       setIsOpenChildrenSection(false);
       return;
     }
-    console.log("loading children comments");
 
     setIsOpenChildrenSection(!isOpenChildrenSection);
     setLoading(true);
@@ -51,7 +76,6 @@ function Comment({ comment }: Readonly<CommentProps>) {
                 c.replies = data;
                 return true;
               }
-
               if (c.replies && c.replies.length > 0) {
                 const found = findAndUpdate(c.replies);
                 if (found) {
@@ -81,11 +105,38 @@ function Comment({ comment }: Readonly<CommentProps>) {
 
   return (
     <div className="comment-container">
+
+      {lightboxOpen && (
+        <Lightbox
+          open={lightboxOpen}
+          close={() => setLightboxOpen(false)}
+          slides={[
+            {
+              src: `${rootImageFilesPath}/${comment.imageFileName}`,
+              alt: 'image-file',
+            },
+          ]}
+        />
+      )}
+
+      {isTextModalOpen && (
+        <button className="text-modal-overlay" onClick={() => setIsTextModalOpen(false)}>
+          <button className="text-modal" onClick={(e) => e.stopPropagation()}>
+            <div>
+              <h3>File content</h3>
+              <pre className="text-modal-content">{textFileContent}</pre>
+              <button onClick={() => setIsTextModalOpen(false)}>Close</button>
+            </div>
+          </button>
+        </button>
+      )}
+
+
       <div className="comment-meta">
         <div className="avatar-and-user">
           <Avatar
             size={40}
-            name={comment.user?.userName}
+            name={comment.user?.email}
             variant="beam"
             colors={[
               "#92A1C6",
@@ -124,19 +175,20 @@ function Comment({ comment }: Readonly<CommentProps>) {
         {(comment.imageFileName || comment.textFileName) && (
           <div className="file-previews">
             {comment.imageFileName && (
-              <div className="image-block">
+              <button className="image-block" onClick={handleImageClick}>
                 <img
                   src={`${rootImageFilesPath}/${comment.imageFileName}`}
                   alt="image-file"
                   className="image-preview"
                 />
-              </div>
+              </button>
             )}
+
             {comment.textFileName && (
               <div className="text-file-link">
-                <a href={`${rootTextFilesPath}/${comment.textFileName}`} target="_blank">
-                  <span><FaRegFileAlt /></span>
-                </a>
+                <button onClick={openTextFileModal}>
+                  <FaRegFileAlt />
+                </button>
               </div>
             )}
           </div>
@@ -153,20 +205,23 @@ function Comment({ comment }: Readonly<CommentProps>) {
       {showForm && <CommentForm parentId={comment.id} />}
 
       {loading && <div className="spinner" aria-label="Loading spinner"></div>}
-      {fetchError && (
-        <p className="error-message">
-          <FaWheelchair /> Error loading replies. Please try again later.
-        </p>
-      )}
+      {
+        fetchError && (
+          <p className="error-message">
+            <FaWheelchair /> Error loading replies. Please try again later.
+          </p>
+        )
+      }
 
-      {isOpenChildrenSection &&
+      {
+        isOpenChildrenSection &&
         Array.isArray(comment.replies) &&
         comment.replies.length > 0 && (
           <CommentThread comments={comment.replies} />
         )
       }
 
-    </div>
+    </div >
   );
 }
 

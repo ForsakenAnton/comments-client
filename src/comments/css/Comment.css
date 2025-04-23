@@ -134,3 +134,76 @@
   transform: scale(1.05);
   filter: brightness(1.25);
 }
+
+/* MODAL */
+
+.text-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+}
+
+.text-modal {
+  background: white;
+  padding: var(--gap-md);
+  border-radius: var(--border-radius-md);
+  max-width: 800px;
+  max-height: 80vh;
+  overflow: auto;
+  opacity: 0;
+  animation: scaleIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.text-modal-content {
+  font-family: "Segoe UI", sans-serif;
+  font-size: var(--font-size-sm);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background: var(--neutral-50);
+  padding: var(--padding-sm);
+  border-radius: var(--border-radius-md);
+  line-height: 1.5;
+  color: var(--grey-800);
+}
+
+.text-modal h3 {
+  margin-bottom: var(--margin-md);
+  font-size: var(--font-size-xl);
+}
+
+.text-modal button {
+  margin: var(--margin-md);
+  align-self: flex-end;
+  padding: var(--padding-sm) var(--padding-md);
+  background: var(--indigo-500);
+  color: white;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  transition: background var(--transition-fast);
+}
+
+.text-modal button:hover {
+  background: var(--indigo-600);
+}
