@@ -1,0 +1,15 @@
+.title {
+  text-align: center;
+  color: var(--gray-800);
+  margin-bottom: var(--margin-lg);
+  margin-top: var(--margin-md);
+  transition: color var(--transition-fast);
+}
+
+.title-text {
+  display: inline-block;
+  padding-bottom: var(--padding-sm);
+  padding-right: var(--padding-sm);
+  border-bottom: 3px solid var(--gray-800);
+  transition: border-color var(--transition-fast);
+}

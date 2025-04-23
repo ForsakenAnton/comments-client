@@ -1,3 +1,4 @@
+import './css/Title.css';
 
 interface TitleProps {
   text: string,

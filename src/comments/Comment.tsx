@@ -7,6 +7,9 @@ import { FaRegFileAlt, FaWheelchair } from 'react-icons/fa';
 import CommentThread from './CommentThread';
 import { useCommentsContext } from './commentsContext';
 import CommentForm from './CommentForm';
+import Button from '../components/Button';
+
+import './css/Comment.css';
 
 interface CommentProps {
   comment: CommentGetDto
@@ -22,7 +25,7 @@ function Comment({ comment }: Readonly<CommentProps>) {
   const [showForm, setShowForm] = useState(false);
 
   const disableTogglingCommentsClassName = comment.childrenCommentsCount === 0
-    ? "disable"
+    ? "disabled"
     : "";
 
   const loadChildrenComments = async () => {
@@ -77,7 +80,7 @@ function Comment({ comment }: Readonly<CommentProps>) {
   }
 
   return (
-    <div className="comment-box">
+    <div className="comment-container">
       <div className="comment-meta">
         <div className="avatar-and-user">
           <Avatar
@@ -103,21 +106,20 @@ function Comment({ comment }: Readonly<CommentProps>) {
             </div>
           </div>
         </div>
-        <button
+        <Button
           onClick={loadChildrenComments}
           className={`unstyled-button chevron-container ${disableTogglingCommentsClassName}`}
-          disabled={disableTogglingCommentsClassName === "disable"}
-          aria-label="Toggle children section"
+          disabled={disableTogglingCommentsClassName === "disabled"}
         >
           <span className='replies-count'>{comment.childrenCommentsCount}</span>
           <span className={`chevron-icon ${isOpenChildrenSection ? 'rotate' : ''}`}>
             <BiChevronRight />
           </span>
-        </button>
+        </Button>
       </div>
 
       <div className="comment-content">
-        <p>{comment.text}</p>
+        <p className='text'>{comment.text}</p>
 
         {(comment.imageFileName || comment.textFileName) && (
           <div className="file-previews">
@@ -142,7 +144,7 @@ function Comment({ comment }: Readonly<CommentProps>) {
       </div>
 
       <button
-        className='reply-btn'
+        className='btn btn-indigo btn-sm'
         onClick={() => setShowForm(!showForm)}
       >
         {showForm ? "Cancel" : "Reply"}

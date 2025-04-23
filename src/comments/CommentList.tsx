@@ -9,10 +9,14 @@ function CommentList() {
     <>
       {loading && <div className="spinner" aria-label="Loading spinner"></div>}
       {fetchError && (
-        <p className="error-message">
-          <FaWheelchair /> Error loading comments. Please try again later.
-          <button onClick={() => window.location.reload()}>Reload the page</button>
-        </p>
+        <div className="error-message">
+          <div className="error-text">
+            <FaWheelchair />
+            {" "}
+            <span>Error loading comments. Please try again later.</span>
+          </div>
+          <button className="btn btn-success" onClick={() => window.location.reload()}>Reload the page</button>
+        </div>
       )}
       {!loading && !fetchError && <CommentThread comments={comments} />}
     </>

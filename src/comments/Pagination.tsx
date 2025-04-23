@@ -1,5 +1,8 @@
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { useCommentsContext } from "./commentsContext";
+import Button from "../components/Button";
+
+import './css/Pagination.css';
 
 function Pagination() {
   const { paginationMetadata, setPaginationMetadata } = useCommentsContext();
@@ -31,7 +34,7 @@ function Pagination() {
 
   return (
     <section className='pagination-container'>
-      <button
+      <Button
         onClick={() => {
           setPaginationMetadata({
             ...paginationMetadata,
@@ -39,14 +42,14 @@ function Pagination() {
           })
         }}
         disabled={!hasPrevious}
-        className={`pagination-button ${!hasPrevious ? "disabled" : ""}`}
+        className={`pagination-button  ${!hasPrevious ? "disabled" : ""}`}
       >
         <GrPrevious />
-      </button>
+      </Button>
 
       {pages.map((page, index) => (
         typeof page === "number" ? (
-          <button
+          <Button
             key={`${page}-${index}`}
             onClick={() => {
               setPaginationMetadata({
@@ -57,13 +60,13 @@ function Pagination() {
             className={`pagination-button ${page === currentPage ? "active" : ""}`}
           >
             {page}
-          </button>
+          </Button>
         ) : (
           <span key={`${page}-${index}`} className="pagination-ellipsis">...</span>
         )
       ))}
 
-      <button
+      <Button
         onClick={() => {
           setPaginationMetadata({
             ...paginationMetadata,
@@ -74,7 +77,7 @@ function Pagination() {
         className={`pagination-button ${!hasNext ? "disabled" : ""}`}
       >
         <GrNext />
-      </button>
+      </Button>
 
       <select
         className="page-size-selector"

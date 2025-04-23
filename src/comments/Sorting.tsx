@@ -4,6 +4,8 @@ import { initialOrderByButtons } from "./initialData";
 import { AiOutlineSortAscending, AiOutlineSortDescending } from "react-icons/ai";
 import OrderByButton from "../interfaces/orderByButton";
 
+import './css/Sorting.css';
+
 function Sorting() {
   const { orderBy, setOrderBy } = useCommentsContext();
   const [orderByButtons, setOrderByButtons] = useState<OrderByButton[]>(initialOrderByButtons);
@@ -35,7 +37,7 @@ function Sorting() {
       ? <AiOutlineSortDescending size="1.25rem" />
       : <AiOutlineSortAscending size="1.25rem" />;
 
-    let className = `unstyled-button sorting-btn`;
+    let className = `sorting-btn`;
     if (btn.order.includes(orderBy)) {
       className += " active";
     }
