@@ -4,7 +4,8 @@ import PaginationMetadata from "./paginationMetadata";
 
 export default interface CommentsProviderValue {
   comments: CommentGetDto[];
-  setComments: React.Dispatch<React.SetStateAction<CommentGetDto[]>>;
+  addComment: (newComment: CommentGetDto) => void,
+  loadChildrenComments: (parentId: number) => Promise<CommentGetDto[] | null>
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   fetchError: boolean;

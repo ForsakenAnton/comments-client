@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import CommentsContext from "./commentsContext";
 import { apiPaths } from "../config/apiPaths";
 import CommentsProviderValue from "../interfaces/commentsProviderValue";
@@ -63,11 +63,74 @@ function CommentsProvider({ children }: Readonly<CommentsProviderProps>) {
     ]);
 
 
+  const loadChildrenComments = useCallback(async (parentId: number): Promise<CommentGetDto[] | null> => {
+    try {
+      const response = await fetch(`${apiPaths.getChildrenComments}/${parentId}`);
+      if (response.ok) {
+        const data = await response.json();
+
+        setComments((draft) => {
+          const findAndUpdate = (comments: CommentGetDto[]) => {
+            for (const c of comments) {
+              if (c.id === parentId) {
+                c.replies = data;
+                return true;
+              }
+              if (c.replies && findAndUpdate(c.replies)) return true;
+            }
+            return false;
+          };
+          findAndUpdate(draft);
+        });
+
+        return data;
+      } else {
+        console.error("Response not OK:", response.status);
+      }
+    } catch (error) {
+      console.error("Error loading children:", error);
+    }
+
+    return null;
+  }, [setComments]);
+
+
+  const addComment = useCallback((newComment: CommentGetDto) => {
+    setComments((draft) => {
+      if (newComment.parentId == null) {
+        draft.push({ ...newComment, replies: [] });
+      } else {
+        const addToParent = (list: CommentGetDto[]): boolean => {
+          for (const comment of list) {
+            if (comment.id === newComment.parentId) {
+              if (!comment.replies) {
+                comment.replies = [];
+              }
+
+              comment.replies.push({ ...newComment, replies: [] });
+              comment.childrenCommentsCount++;
+              return true;
+            }
+            if (comment.replies && addToParent(comment.replies)) {
+              return true;
+            }
+          }
+
+          return false;
+        };
+
+        addToParent(draft);
+      }
+    });
+  }, [setComments]);
+
+
   const commentsProviderValue: CommentsProviderValue = useMemo(
     () => {
       return {
         comments,
-        setComments,
+        addComment,
+        loadChildrenComments,
         loading,
         setLoading,
         fetchError,
@@ -78,7 +141,7 @@ function CommentsProvider({ children }: Readonly<CommentsProviderProps>) {
         setOrderBy
       }
     },
-    [comments, loading, fetchError, setComments, paginationMetadata, orderBy]);
+    [comments, addComment, loadChildrenComments, loading, fetchError, paginationMetadata, orderBy]);
 
   return (
     <CommentsContext.Provider value={commentsProviderValue}>

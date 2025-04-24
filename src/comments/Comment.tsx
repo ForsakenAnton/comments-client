@@ -2,7 +2,7 @@ import { useState } from 'react'
 import CommentGetDto from '../interfaces/commentGet';
 import Avatar from 'boring-avatars';
 import { BiChevronRight } from 'react-icons/bi';
-import { apiPaths, rootImageFilesPath, rootTextFilesPath } from '../config/apiPaths';
+import { rootImageFilesPath, rootTextFilesPath } from '../config/apiPaths';
 import { FaRegFileAlt, FaWheelchair } from 'react-icons/fa';
 import CommentThread from './CommentThread';
 import { useCommentsContext } from './commentsContext';
@@ -13,13 +13,14 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 import './css/Comment.css';
+import { IoCloseSharp } from 'react-icons/io5';
 
 interface CommentProps {
   comment: CommentGetDto
 }
 
 function Comment({ comment }: Readonly<CommentProps>) {
-  const { setComments } = useCommentsContext();
+  const { loadChildrenComments } = useCommentsContext();
 
   const [isOpenChildrenSection, setIsOpenChildrenSection] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -54,54 +55,23 @@ function Comment({ comment }: Readonly<CommentProps>) {
   };
 
 
-  const loadChildrenComments = async () => {
+  const handleLoadChildren = async () => {
     if (isOpenChildrenSection) {
       setIsOpenChildrenSection(false);
       return;
     }
 
-    setIsOpenChildrenSection(!isOpenChildrenSection);
+    setIsOpenChildrenSection(true);
     setLoading(true);
     setFetchError(false);
 
-    try {
-      const response = await fetch(`${apiPaths.getChildrenComments}/${comment.id}`);
-      if (response.ok) {
-        const data = await response.json();
-
-        setComments((draft) => {
-          const findAndUpdate = (comments: CommentGetDto[]) => {
-            for (const c of comments) {
-              if (c.id === comment.id) {
-                c.replies = data;
-                return true;
-              }
-              if (c.replies && c.replies.length > 0) {
-                const found = findAndUpdate(c.replies);
-                if (found) {
-                  return true;
-                }
-              }
-            }
-
-            return false;
-          };
-
-          findAndUpdate(draft);
-
-          return draft;
-        });
-      } else {
-        console.log(response.status);
-        setFetchError(true);
-      }
-    } catch (error) {
-      console.log(error);
+    const replies = await loadChildrenComments(comment.id);
+    if (!replies) {
       setFetchError(true);
     }
 
     setLoading(false);
-  }
+  };
 
   return (
     <div className="comment-container">
@@ -122,10 +92,12 @@ function Comment({ comment }: Readonly<CommentProps>) {
       {isTextModalOpen && (
         <button className="text-modal-overlay" onClick={() => setIsTextModalOpen(false)}>
           <button className="text-modal" onClick={(e) => e.stopPropagation()}>
-            <div>
+            <div className="text">
               <h3>File content</h3>
               <pre className="text-modal-content">{textFileContent}</pre>
-              <button onClick={() => setIsTextModalOpen(false)}>Close</button>
+              <button className="close-btn" onClick={() => setIsTextModalOpen(false)}>
+                <IoCloseSharp />
+              </button>
             </div>
           </button>
         </button>
@@ -158,7 +130,7 @@ function Comment({ comment }: Readonly<CommentProps>) {
           </div>
         </div>
         <Button
-          onClick={loadChildrenComments}
+          onClick={handleLoadChildren}
           className={`unstyled-button chevron-container ${disableTogglingCommentsClassName}`}
           disabled={disableTogglingCommentsClassName === "disabled"}
         >
@@ -202,7 +174,7 @@ function Comment({ comment }: Readonly<CommentProps>) {
         {showForm ? "Cancel" : "Reply"}
       </button>
 
-      {showForm && <CommentForm parentId={comment.id} />}
+      {showForm && <CommentForm parentCommentId={comment.id} />}
 
       {loading && <div className="spinner" aria-label="Loading spinner"></div>}
       {
