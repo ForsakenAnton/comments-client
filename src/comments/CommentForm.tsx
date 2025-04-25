@@ -346,7 +346,5 @@ export default function CommentForm({
 
       <button type="submit" className="comment-form__button">Send</button>
     </form>
-
-
   );
 }

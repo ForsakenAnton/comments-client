@@ -1,4 +1,4 @@
-.comment-section-wrapper {
+/* .comment-section-wrapper {
   width: 90%;
   margin: 0 auto;
 }
@@ -133,11 +133,11 @@
 .text-file-link:hover {
   transform: scale(1.05);
   filter: brightness(1.25);
-}
+} */
 
 /* MODAL */
 
-.text-modal-overlay {
+/* .text-modal-overlay {
   all: unset;
   display: flex;
   justify-content: center;
@@ -216,4 +216,4 @@
   color: var(--red-700);
   background: var(--red-100);
   border-radius: 50%;
-}
+} */

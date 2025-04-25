@@ -142,7 +142,9 @@ function Comment({ comment }: Readonly<CommentProps>) {
       </div>
 
       <div className="comment-content">
-        <p className='text'>{comment.text}</p>
+        <p
+          dangerouslySetInnerHTML={{ __html: comment.text }} // (!!!)
+          className='text'></p>
 
         {(comment.imageFileName || comment.textFileName) && (
           <div className="file-previews">

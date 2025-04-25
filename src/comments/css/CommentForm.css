@@ -1,4 +1,4 @@
-.comment-form {
+/* .comment-form {
   max-width: 600px;
   margin: 0 auto;
   font-family: Arial, sans-serif;
@@ -18,7 +18,7 @@
 .comment-form__textarea,
 .comment-form__file {
   width: 100%;
-  padding: 0.25rem 1rem;
+  padding: var(--padding-xs) var(--padding-md);
   border: 1px solid #ccc;
   border-radius: var(--border-radius-md);
   font-size: 0.875rem;
@@ -138,4 +138,4 @@
 
 .comment-form__hidden {
   display: none;
-}
+} */

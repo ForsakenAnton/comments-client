@@ -5,6 +5,7 @@ import Sorting from "./Sorting";
 import { useState } from "react";
 import Button from "../components/Button";
 import CommentForm from "./CommentForm";
+import MotionWrapper from "../motion/MotionWrapper";
 
 function CommentsSection() {
   const [showForm, setShowForm] = useState(false);
@@ -18,7 +19,11 @@ function CommentsSection() {
         {showForm ? "Cancel" : "Add a comment"}
       </Button>
 
-      {showForm && <CommentForm parentCommentId={null} setShowForm={setShowForm} />}
+      <MotionWrapper>
+        {showForm && (
+          <CommentForm parentCommentId={null} setShowForm={setShowForm} />
+        )}
+      </MotionWrapper>
 
       <Sorting />
       <CommentList />
