@@ -362,6 +362,18 @@ body {
   transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
+.m-bottom-sm {
+  margin-bottom: var(--margin-sm);
+}
+
+.m-bottom-md {
+  margin-bottom: var(--margin-md);
+}
+
+.m-bottom-lg {
+  margin-bottom: var(--margin-lg);
+}
+
 .spinner {
   margin: 2rem auto;
   width: 3rem;

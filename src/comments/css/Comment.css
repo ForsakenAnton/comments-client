@@ -198,13 +198,15 @@
 
 .text-modal h3 {
   margin-bottom: var(--margin-md);
+  margin-top: var(--margin-md);
+  margin-left: var(--margin-md);
   font-size: var(--font-size-xl);
 }
 
 .text-modal .close-btn {
   position: absolute;
-  top: 1.5rem;
-  right: 2.5rem;
+  top: 0.25rem;
+  left: 0.25rem;
   font-size: 2rem;
   color: var(--red-500);
   cursor: pointer;

@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import DOMPurify from 'dompurify';
 import { apiPaths } from '../config/apiPaths';
 import { useCommentsContext } from './commentsContext';
+import { toast } from 'react-toastify';
+
+import './css/CommentForm.css';
 
 const allowedTags = ['a', 'code', 'i', 'strong'];
 const allowedAttrs = ['href', 'title'];
@@ -26,10 +29,15 @@ interface CommentFormData {
 }
 
 interface CommentFormProps {
-  parentCommentId?: number;
+  parentCommentId?: number | null;
+  setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpenChildrenSection?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function CommentForm({ parentCommentId }: Readonly<CommentFormProps>) {
+export default function CommentForm({
+  parentCommentId,
+  setShowForm,
+  setIsOpenChildrenSection }: Readonly<CommentFormProps>) {
   const {
     register,
     handleSubmit,
@@ -44,9 +52,13 @@ export default function CommentForm({ parentCommentId }: Readonly<CommentFormPro
   const [captchaUrl, setCaptchaUrl] = useState<string>('');
   const [previewText, setPreviewText] = useState<string>('');
 
-  const loadCaptcha = async () => {
+  const loadCaptcha = useCallback(async () => {
     try {
-      const response = await fetch(apiPaths.getCaptcha, {
+      const captchaUrl = parentCommentId
+        ? `${apiPaths.getCaptcha}/${parentCommentId}`
+        : `${apiPaths.getCaptcha}`;
+
+      const response = await fetch(captchaUrl, {
         method: 'GET',
         credentials: 'include',
       });
@@ -61,12 +73,12 @@ export default function CommentForm({ parentCommentId }: Readonly<CommentFormPro
     } catch (error) {
       console.error('Error loading captcha:', error);
     }
-  };
+  }, [parentCommentId]);
 
 
   useEffect(() => {
     loadCaptcha();
-  }, []);
+  }, [loadCaptcha]);
 
   useEffect(() => {
     return () => {
@@ -106,18 +118,23 @@ export default function CommentForm({ parentCommentId }: Readonly<CommentFormPro
 
       if (!res.ok) {
         const error = await res.json();
-        alert(`Error: ${error.statusCode} - ${error.message}`);
+        toast.error(`Error: ${error.statusCode} - ${error.message}`);
         loadCaptcha();
       } else {
-        alert('Comment successfully sent!');
+        toast.success('Comment successfully sent!');
         loadCaptcha();
 
         const newComment = await res.json();
         addComment(newComment);
+
+        setShowForm(false);
+        if (setIsOpenChildrenSection) {
+          setIsOpenChildrenSection(true);
+        }
       }
     } catch (e) {
       console.error(e);
-      alert('There was an error when sending a comment.');
+      toast.error('There was an error when sending a comment.');
     }
   };
 
@@ -139,7 +156,7 @@ export default function CommentForm({ parentCommentId }: Readonly<CommentFormPro
   };
 
   const insertTag = (tag: string) => {
-    const textarea = document.getElementById('text') as HTMLTextAreaElement;
+    const textarea = document.getElementById(`textArea${parentCommentId}`) as HTMLTextAreaElement;
     if (!textarea) return;
 
     const start = textarea.selectionStart;
@@ -148,10 +165,17 @@ export default function CommentForm({ parentCommentId }: Readonly<CommentFormPro
     const openTag = `<${tag}>`;
     const closeTag = `</${tag}>`;
 
-    const newText = textarea.value.substring(0, start) + openTag + selectedText + closeTag + textarea.value.substring(end);
+    const newText = textarea.value.substring(0, start) +
+      openTag +
+      selectedText +
+      closeTag +
+      textarea.value.substring(end);
+
     textarea.value = newText;
 
-    textarea.setSelectionRange(start + openTag.length, start + openTag.length + selectedText.length);
+    textarea.setSelectionRange(
+      start + openTag.length,
+      start + openTag.length + selectedText.length);
 
     const inputEvent = new Event('input', { bubbles: true });
     textarea.dispatchEvent(inputEvent);
@@ -159,83 +183,170 @@ export default function CommentForm({ parentCommentId }: Readonly<CommentFormPro
 
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input type="hidden" value={parentCommentId} name="parentId" id="parentId" />
+    <form className="comment-form" onSubmit={handleSubmit(onSubmit)}>
+      <input
+        type="hidden"
+        value={parentCommentId ?? ''}
+        name="parentId"
+        id="parentId"
+        className="comment-form__hidden"
+      />
 
-      <div>
-        <label htmlFor='userName'>User Name</label>
-        <input id='userName' {...register('userName', {
-          required: true,
-          pattern: /^[a-zA-Z0-9\s]+$/,
-        })} />
-        {errors.userName && <p> Only Latin letters, numbers and spaces are allowed.</p>}
+      <div className="comment-form__field">
+        <input
+          id="userName"
+          type="text"
+          className="comment-form__input"
+          placeholder="Username"
+          {...register('userName', {
+            required: true,
+            pattern: /^[a-zA-Z0-9\s]+$/,
+          })}
+        />
+        {errors.userName && (
+          <p className="comment-form__error">
+            Only Latin letters, numbers and spaces are allowed.
+          </p>
+        )}
       </div>
 
-      <div>
-        <label htmlFor='email'>Email</label>
-        <input id='email' type="email" {...register('email', { required: true })} />
-        {errors.email && <p>Email address is invalid.</p>}
+      <div className="comment-form__field">
+        <input
+          id="email"
+          type="email"
+          className="comment-form__input"
+          placeholder="Email address"
+          {...register('email', { required: true })}
+        />
+        {errors.email && (
+          <p className="comment-form__error">Email address is invalid.</p>
+        )}
       </div>
 
-      <div>
-        <label htmlFor='homePage'>Home Page</label>
-        <input id='homePage' type="url" {...register('homePage')} />
+      <div className="comment-form__field">
+        <input
+          id="homePage"
+          type="url"
+          className="comment-form__input"
+          placeholder="Home Page"
+          {...register('homePage')}
+        />
       </div>
 
-      <div>
-        <label htmlFor='captcha'>CAPTCHA</label>
-        <div>
-          {captchaUrl === "" ? (
-            <div className='spinner'></div>
-          ) : (
-            <>
-              <img src={captchaUrl} alt="captcha" style={{ cursor: 'pointer' }} />
-              <button type='button' className='btn btn-indigo' onClick={loadCaptcha}>
-                {captchaUrl ? 'Reload captcha' : 'Load captcha'}
-              </button>
-            </>
-          )}
-        </div>
-        <input {...register('captcha', { required: true })} />
-        {errors.captcha && <p>Enter captcha.</p>}
+      <div className="comment-form__field">
+        {captchaUrl === '' ? (
+          <div className="comment-form__spinner"></div>
+        ) : (
+          <div className="comment-form__captcha">
+            <img
+              src={captchaUrl}
+              alt="captcha"
+              className="comment-form__image"
+            />
+            <button
+              type="button"
+              className="comment-form__button"
+              onClick={loadCaptcha}
+            >
+              {captchaUrl ? 'Reload captcha' : 'Load captcha'}
+            </button>
+          </div>
+        )}
+        <input
+          className="comment-form__input"
+          placeholder="Captcha"
+          type="text"
+          {...register('captcha', { required: true })}
+        />
+        {errors.captcha && (
+          <p className="comment-form__error">Enter captcha.</p>
+        )}
       </div>
 
-      <div>
-        <label htmlFor='text'>Text</label>
-        <textarea id='text' {...register('text', { required: true })}></textarea>
-        <div>
-          <button className='btn btn-indigo btn-sm' type="button" onClick={() => insertTag('strong')}>Bold</button>
-          <button className='btn btn-indigo btn-sm' type="button" onClick={() => insertTag('i')}>Italic</button>
-          <button className='btn btn-indigo btn-sm' type="button" onClick={() => insertTag('code')}>Code</button>
-          <button className='btn btn-indigo btn-sm' type="button" onClick={() => insertTag('a')}>Link</button>
-          <button className='btn btn-indigo btn-sm' type="button" onClick={handlePreview}>Preview</button>
-        </div>
-        {errors.text && <p>The field is required.</p>}
+      <div className="comment-form__toolbar">
+        <button
+          className="comment-form__toolbar-button"
+          type="button"
+          onClick={() => insertTag('strong')}
+        >
+          Bold
+        </button>
+        <button
+          className="comment-form__toolbar-button"
+          type="button"
+          onClick={() => insertTag('i')}
+        >
+          Italic
+        </button>
+        <button
+          className="comment-form__toolbar-button"
+          type="button"
+          onClick={() => insertTag('code')}
+        >
+          Code
+        </button>
+        <button
+          className="comment-form__toolbar-button"
+          type="button"
+          onClick={() => insertTag('a')}
+        >
+          Link
+        </button>
+        <button
+          className="comment-form__toolbar-button"
+          type="button"
+          onClick={handlePreview}
+        >
+          Preview
+        </button>
       </div>
 
-
-      <div>
-        <label htmlFor='imageFile'>Image File (jpg/png/gif)</label>
-        <input id='imageFile' type="file" accept="image/*" {...register('imageFile', {
-          validate: validateImage,
-        })} />
-        {errors.imageFile && <p>JPG, PNG or GIF only.</p>}
+      <div className="comment-form__field">
+        <textarea
+          id={`textArea${parentCommentId}`}
+          className="comment-form__textarea"
+          placeholder="Comment text"
+          {...register('text', { required: true })}
+        ></textarea>
+        {errors.text && (
+          <p className="comment-form__error">The field is required.</p>
+        )}
       </div>
 
-      <div>
-        <label htmlFor='textFile'>Text File (txt, до 100KB)</label>
-        <input id='textFile' type="file" accept=".txt" {...register('textFile', {
-          validate: validateTxt,
-        })} />
-        {errors.textFile && <p>Only.txt files up to 100KB.</p>}
-      </div>
-
-      <button type="submit">Send</button>
-
-      <div>
-        <h3>Preview:</h3>
+      <div className="comment-form__preview">
+        <h3 className="comment-form__label">Preview:</h3>
         <div dangerouslySetInnerHTML={{ __html: previewText }}></div>
       </div>
-    </form >
+
+      <div className="comment-form__field">
+        <input
+          id="imageFile"
+          type="file"
+          className="comment-form__file"
+          accept="image/*"
+          {...register('imageFile', { validate: validateImage })}
+        />
+        {errors.imageFile && (
+          <p className="comment-form__error">JPG, PNG or GIF only.</p>
+        )}
+      </div>
+
+      <div className="comment-form__field">
+        <input
+          id="textFile"
+          type="file"
+          className="comment-form__file"
+          accept=".txt"
+          {...register('textFile', { validate: validateTxt })}
+        />
+        {errors.textFile && (
+          <p className="comment-form__error">Only .txt files up to 100KB.</p>
+        )}
+      </div>
+
+      <button type="submit" className="comment-form__button">Send</button>
+    </form>
+
+
   );
 }

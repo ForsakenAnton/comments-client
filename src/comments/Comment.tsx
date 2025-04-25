@@ -174,7 +174,13 @@ function Comment({ comment }: Readonly<CommentProps>) {
         {showForm ? "Cancel" : "Reply"}
       </button>
 
-      {showForm && <CommentForm parentCommentId={comment.id} />}
+      {showForm &&
+        <CommentForm
+          parentCommentId={comment.id}
+          setShowForm={setShowForm}
+          setIsOpenChildrenSection={setIsOpenChildrenSection}
+        />
+      }
 
       {loading && <div className="spinner" aria-label="Loading spinner"></div>}
       {
