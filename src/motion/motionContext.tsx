@@ -1,8 +1,8 @@
 import { createContext } from "react";
-import MotionContextType from "../interfaces/MotionContextType";
+import MotionContextType from "../interfaces/motionContextType";
 
 const MotionContext = createContext<MotionContextType>({
-  wrapMotion: (children) => <>{children}</>,
+  wrapMotion: (children) => <>{children} </>,
 });
 
 export default MotionContext;
