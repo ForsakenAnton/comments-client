@@ -3,6 +3,7 @@ import CommentsProvider from './comments/CommentsProvider';
 
 import './App.css'
 import Title from './components/Title';
+import MotionWrapper from './motion/MotionWrapper';
 
 function App() {
 
@@ -14,9 +15,11 @@ function App() {
         text='Comments App'
       />
       <CommentsProvider>
-        <section className='comment-section-wrapper'>
-          <CommentsSection />
-        </section>
+        <MotionWrapper duration={1.5}>
+          <section className='comment-section-wrapper'>
+            <CommentsSection />
+          </section>
+        </MotionWrapper>
       </CommentsProvider>
     </>
   )

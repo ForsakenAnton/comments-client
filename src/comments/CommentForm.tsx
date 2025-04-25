@@ -6,6 +6,7 @@ import { useCommentsContext } from './commentsContext';
 import { toast } from 'react-toastify';
 
 import './css/CommentForm.css';
+import MotionWrapper from '../motion/MotionWrapper';
 
 const allowedTags = ['a', 'code', 'i', 'strong'];
 const allowedAttrs = ['href', 'title'];
@@ -203,11 +204,13 @@ export default function CommentForm({
             pattern: /^[a-zA-Z0-9\s]+$/,
           })}
         />
-        {errors.userName && (
-          <p className="comment-form__error">
-            Only Latin letters, numbers and spaces are allowed.
-          </p>
-        )}
+        <MotionWrapper animationType='slide'>
+          {errors.userName && (
+            <p className="comment-form__error">
+              Only Latin letters, numbers and spaces are allowed.
+            </p>
+          )}
+        </MotionWrapper>
       </div>
 
       <div className="comment-form__field">
@@ -218,9 +221,11 @@ export default function CommentForm({
           placeholder="Email address"
           {...register('email', { required: true })}
         />
-        {errors.email && (
-          <p className="comment-form__error">Email address is invalid.</p>
-        )}
+        <MotionWrapper animationType='slide'>
+          {errors.email && (
+            <p className="comment-form__error">Email address is invalid.</p>
+          )}
+        </MotionWrapper>
       </div>
 
       <div className="comment-form__field">
@@ -234,33 +239,37 @@ export default function CommentForm({
       </div>
 
       <div className="comment-form__field">
-        {captchaUrl === '' ? (
-          <div className="comment-form__spinner"></div>
-        ) : (
-          <div className="comment-form__captcha">
-            <img
-              src={captchaUrl}
-              alt="captcha"
-              className="comment-form__image"
-            />
-            <button
-              type="button"
-              className="comment-form__button"
-              onClick={loadCaptcha}
-            >
-              {captchaUrl ? 'Reload captcha' : 'Load captcha'}
-            </button>
-          </div>
-        )}
+        <MotionWrapper animationType='zoom'>
+          {captchaUrl === '' ? (
+            <div className="comment-form__spinner"></div>
+          ) : (
+            <div className="comment-form__captcha">
+              <img
+                src={captchaUrl}
+                alt="captcha"
+                className="comment-form__image"
+              />
+              <button
+                type="button"
+                className="comment-form__button"
+                onClick={loadCaptcha}
+              >
+                {captchaUrl ? 'Reload captcha' : 'Load captcha'}
+              </button>
+            </div>
+          )}
+        </MotionWrapper>
         <input
           className="comment-form__input"
           placeholder="Captcha"
           type="text"
           {...register('captcha', { required: true })}
         />
-        {errors.captcha && (
-          <p className="comment-form__error">Enter captcha.</p>
-        )}
+        <MotionWrapper animationType='slide'>
+          {errors.captcha && (
+            <p className="comment-form__error">Enter captcha.</p>
+          )}
+        </MotionWrapper>
       </div>
 
       <div className="comment-form__toolbar">
@@ -308,9 +317,11 @@ export default function CommentForm({
           placeholder="Comment text"
           {...register('text', { required: true })}
         ></textarea>
-        {errors.text && (
-          <p className="comment-form__error">The field is required.</p>
-        )}
+        <MotionWrapper animationType='slide'>
+          {errors.text && (
+            <p className="comment-form__error">The field is required.</p>
+          )}
+        </MotionWrapper>
       </div>
 
       <div className="comment-form__preview">
@@ -326,9 +337,11 @@ export default function CommentForm({
           accept="image/*"
           {...register('imageFile', { validate: validateImage })}
         />
-        {errors.imageFile && (
-          <p className="comment-form__error">JPG, PNG or GIF only.</p>
-        )}
+        <MotionWrapper animationType='slide'>
+          {errors.imageFile && (
+            <p className="comment-form__error">JPG, PNG or GIF only.</p>
+          )}
+        </MotionWrapper>
       </div>
 
       <div className="comment-form__field">
@@ -339,12 +352,19 @@ export default function CommentForm({
           accept=".txt"
           {...register('textFile', { validate: validateTxt })}
         />
-        {errors.textFile && (
-          <p className="comment-form__error">Only .txt files up to 100KB.</p>
-        )}
+        <MotionWrapper animationType='slide'>
+          {errors.textFile && (
+            <p className="comment-form__error">Only .txt files up to 100KB.</p>
+          )}
+        </MotionWrapper>
       </div>
 
-      <button type="submit" className="comment-form__button">Send</button>
+      <button
+        type="submit"
+        className="comment-form__button"
+      >
+        Send
+      </button>
     </form>
   );
 }

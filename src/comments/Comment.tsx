@@ -90,19 +90,21 @@ function Comment({ comment }: Readonly<CommentProps>) {
         />
       )}
 
-      {isTextModalOpen && (
-        <button className="text-modal-overlay" onClick={() => setIsTextModalOpen(false)}>
-          <button className="text-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="text">
-              <h3>File content</h3>
-              <pre className="text-modal-content">{textFileContent}</pre>
-              <button className="close-btn" onClick={() => setIsTextModalOpen(false)}>
-                <IoCloseSharp />
-              </button>
-            </div>
+      <MotionWrapper>
+        {isTextModalOpen && (
+          <button className="text-modal-overlay" onClick={() => setIsTextModalOpen(false)}>
+            <button className="text-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="text">
+                <h3>File content</h3>
+                <pre className="text-modal-content">{textFileContent}</pre>
+                <button className="close-btn" onClick={() => setIsTextModalOpen(false)}>
+                  <IoCloseSharp />
+                </button>
+              </div>
+            </button>
           </button>
-        </button>
-      )}
+        )}
+      </MotionWrapper>
 
 
       <div className="comment-meta">
@@ -196,13 +198,14 @@ function Comment({ comment }: Readonly<CommentProps>) {
         )
       }
 
-      {
-        isOpenChildrenSection &&
-        Array.isArray(comment.replies) &&
-        comment.replies.length > 0 && (
-          <CommentThread comments={comment.replies} />
-        )
-      }
+      <MotionWrapper animationType='slide'>
+        {isOpenChildrenSection &&
+          Array.isArray(comment.replies) &&
+          comment.replies.length > 0 && (
+            <CommentThread comments={comment.replies} />
+          )
+        }
+      </MotionWrapper>
 
     </div >
   );
