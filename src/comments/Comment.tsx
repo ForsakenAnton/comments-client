@@ -14,6 +14,7 @@ import "yet-another-react-lightbox/styles.css";
 
 import './css/Comment.css';
 import { IoCloseSharp } from 'react-icons/io5';
+import MotionWrapper from '../motion/MotionWrapper';
 
 interface CommentProps {
   comment: CommentGetDto
@@ -176,13 +177,15 @@ function Comment({ comment }: Readonly<CommentProps>) {
         {showForm ? "Cancel" : "Reply"}
       </button>
 
-      {showForm &&
-        <CommentForm
-          parentCommentId={comment.id}
-          setShowForm={setShowForm}
-          setIsOpenChildrenSection={setIsOpenChildrenSection}
-        />
-      }
+      <MotionWrapper animationType='slide'>
+        {showForm &&
+          <CommentForm
+            parentCommentId={comment.id}
+            setShowForm={setShowForm}
+            setIsOpenChildrenSection={setIsOpenChildrenSection}
+          />
+        }
+      </MotionWrapper>
 
       {loading && <div className="spinner" aria-label="Loading spinner"></div>}
       {

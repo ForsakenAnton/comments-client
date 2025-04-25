@@ -20,7 +20,7 @@ function CommentsSection() {
         {showForm ? "Cancel" : "Add a comment"}
       </Button>
 
-      <MotionWrapper>
+      <MotionWrapper animationType="fade">
         {showForm && (
           <CommentForm parentCommentId={null} setShowForm={setShowForm} />
         )}
