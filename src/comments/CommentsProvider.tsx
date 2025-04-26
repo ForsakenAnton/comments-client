@@ -19,48 +19,49 @@ function CommentsProvider({ children }: Readonly<CommentsProviderProps>) {
   const [paginationMetadata, setPaginationMetadata] = useState<PaginationMetadata>(initialPaginationMetadata);
   const [orderBy, setOrderBy] = useState<OrderBy>("date desc");
 
-  useEffect(
-    () => {
-      const fetchComments = async () => {
-        setLoading(true);
-        setFetchError(false);
+  const fetchComments = useCallback(async () => {
+    setLoading(true);
+    setFetchError(false);
 
-        try {
-          const pageNumberQuery = `?pageNumber=${paginationMetadata.currentPage}`;
-          const pageSizeQuery = `&pageSize=${paginationMetadata.pageSize}`;
-          const orderByQuery = `&orderBy=${orderBy}`;
+    try {
+      const queryParams = new URLSearchParams({
+        pageNumber: paginationMetadata.currentPage.toString(),
+        pageSize: paginationMetadata.pageSize.toString(),
+        orderBy: orderBy
+      });
 
-          const response = await fetch(
-            `${apiPaths.getParentComments}${pageNumberQuery}${pageSizeQuery}${orderByQuery}`
-          );
-          if (response.ok) {
-            const data = await response.json();
-            const paginationMetadata: PaginationMetadata = JSON.parse(response.headers.get("X-Pagination")!);
+      const response = await fetch(
+        `${apiPaths.getParentComments}?${queryParams}`
+      );
 
-            setComments(() => {
-              return data;
-            });
+      if (response.ok) {
+        const data = await response.json();
+        const paginationMetadata: PaginationMetadata = JSON.parse(response.headers.get("X-Pagination")!);
 
-            setPaginationMetadata(paginationMetadata);
-          } else {
-            console.log(response);
-          }
-        } catch (error) {
-          console.log(error);
-          setFetchError(true);
-        }
+        setComments(() => {
+          return data;
+        });
 
-        setLoading(false);
+        setPaginationMetadata(paginationMetadata);
+      } else {
+        console.log(response);
       }
+    } catch (error) {
+      console.log(error);
+      setFetchError(true);
+    }
 
-      fetchComments();
-    },
-    [
-      setComments,
-      paginationMetadata.currentPage,
-      paginationMetadata.pageSize,
-      orderBy
-    ]);
+    setLoading(false);
+  }, [
+    setComments,
+    paginationMetadata.currentPage,
+    paginationMetadata.pageSize,
+    orderBy
+  ]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
 
 
   const loadChildrenComments = useCallback(async (parentId: number): Promise<CommentGetDto[] | null> => {
@@ -94,11 +95,11 @@ function CommentsProvider({ children }: Readonly<CommentsProviderProps>) {
     return null;
   }, [setComments]);
 
-
   const addComment = useCallback((newComment: CommentGetDto) => {
     setComments((draft) => {
       if (newComment.parentId == null) {
-        draft.push({ ...newComment, replies: [] });
+        // draft.push({ ...newComment, replies: [] });
+        draft.unshift({ ...newComment, replies: [] });
       } else {
         const addToParent = (list: CommentGetDto[]): boolean => {
           for (const comment of list) {
@@ -124,11 +125,11 @@ function CommentsProvider({ children }: Readonly<CommentsProviderProps>) {
     });
   }, [setComments]);
 
-
   const commentsProviderValue: CommentsProviderValue = useMemo(
     () => {
       return {
         comments,
+        fetchComments,
         addComment,
         loadChildrenComments,
         loading,
@@ -141,7 +142,8 @@ function CommentsProvider({ children }: Readonly<CommentsProviderProps>) {
         setOrderBy
       }
     },
-    [comments, addComment, loadChildrenComments, loading, fetchError, paginationMetadata, orderBy]);
+    [comments, fetchComments, addComment, loadChildrenComments, loading, fetchError, paginationMetadata, orderBy]
+  );
 
   return (
     <CommentsContext.Provider value={commentsProviderValue}>

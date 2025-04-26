@@ -21,7 +21,11 @@ function CommentList() {
               {" "}
               <span>Error loading comments. Please try again later.</span>
             </div>
-            <button className="btn btn-success" onClick={() => window.location.reload()}>Reload the page</button>
+            <button
+              className="btn btn-success"
+              onClick={() => window.location.reload()}>
+              Reload the page
+            </button>
           </div>
         </MotionWrapper >
       )

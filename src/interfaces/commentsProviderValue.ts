@@ -4,6 +4,7 @@ import PaginationMetadata from "./paginationMetadata";
 
 export default interface CommentsProviderValue {
   comments: CommentGetDto[];
+  fetchComments: () => Promise<void>;
   addComment: (newComment: CommentGetDto) => void,
   loadChildrenComments: (parentId: number) => Promise<CommentGetDto[] | null>
   loading: boolean;

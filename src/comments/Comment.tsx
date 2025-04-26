@@ -37,6 +37,9 @@ function Comment({ comment }: Readonly<CommentProps>) {
     ? "disabled"
     : "";
 
+  const isNewComment = Date.now() - new Date(comment.creationDate).getTime() < 5 * 60 * 1000;
+
+
   const handleImageClick = () => {
     setLightboxOpen(true);
   };
@@ -92,8 +95,28 @@ function Comment({ comment }: Readonly<CommentProps>) {
 
       <MotionWrapper>
         {isTextModalOpen && (
-          <button className="text-modal-overlay" onClick={() => setIsTextModalOpen(false)}>
-            <button className="text-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="text-modal-overlay"
+            onClick={() => setIsTextModalOpen(false)}
+            role="button"
+            tabIndex="0"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setIsTextModalOpen(false);
+              }
+            }}
+          >
+            <div
+              className="text-modal"
+              onClick={(e) => e.stopPropagation()}
+              role="button"
+              tabIndex="0"
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  setIsTextModalOpen(false);
+                }
+              }}
+            >
               <div className="text">
                 <h3>File content</h3>
                 <pre className="text-modal-content">{textFileContent}</pre>
@@ -101,13 +124,20 @@ function Comment({ comment }: Readonly<CommentProps>) {
                   <IoCloseSharp />
                 </button>
               </div>
-            </button>
-          </button>
+            </div>
+          </div>
         )}
       </MotionWrapper>
 
 
       <div className="comment-meta">
+        {isNewComment && (
+          <div className="new-comment">
+            NEW
+          </div>
+        )}
+
+
         <div className="avatar-and-user">
           <Avatar
             size={40}
@@ -123,8 +153,13 @@ function Comment({ comment }: Readonly<CommentProps>) {
           />
           <div className="user-info">
             <div className="name-and-email-info">
-              <strong>{comment.user?.userName}</strong>
-              <span className="email">{comment.user?.email}</span>
+              <strong>
+                {comment.user?.userName.length !== undefined && comment.user?.userName.length > 20
+                  ? `${comment.user?.userName.slice(0, 15)}...`
+                  : comment.user?.userName
+                }
+              </strong>
+              {/* <span className="email">{comment.user?.email}</span> */}
             </div>
             <div className="date-info">
               <span>{new Date(comment.creationDate).toLocaleDateString()}</span>

@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 
 import './css/CommentForm.css';
 import MotionWrapper from '../motion/MotionWrapper';
+import { IoWarningOutline } from 'react-icons/io5';
 
 const allowedTags = ['a', 'code', 'i', 'strong'];
 const allowedAttrs = ['href', 'title'];
@@ -52,6 +53,7 @@ export default function CommentForm({
 
   const [captchaUrl, setCaptchaUrl] = useState<string>('');
   const [previewText, setPreviewText] = useState<string>('');
+  const [textError, setTextError] = useState<string>('');
 
   const loadCaptcha = useCallback(async () => {
     try {
@@ -89,8 +91,27 @@ export default function CommentForm({
     };
   }, [captchaUrl]);
 
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === 'text') {
+        const rawText = value.text ?? '';
+        setPreviewText(sanitizeHTML(rawText));
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+
 
   const onSubmit = async (data: CommentFormData) => {
+    const rawText = data.text || '';
+
+    if (!validateTags(rawText)) {
+      toast.error('⚠️ Incorrect tag nesting or unclosed tags. Please fix it before submitting.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('User.UserName', data.userName);
     formData.append('User.Email', data.email);
@@ -139,10 +160,40 @@ export default function CommentForm({
     }
   };
 
-  const handlePreview = () => {
-    const rawText = watch('text') || '';
-    setPreviewText(sanitizeHTML(rawText));
+  const validateTags = (text: string): boolean => {
+    const tagPattern = /<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g;
+    const stack: string[] = [];
+    let match: RegExpExecArray | null;
+
+    while ((match = tagPattern.exec(text)) !== null) {
+      const [fullTag, tagName] = match;
+
+      if (!allowedTags.includes(tagName)) {
+        continue;
+      }
+
+      if (fullTag.startsWith('</')) {
+        const lastTag = stack.pop();
+        if (lastTag !== tagName) {
+          return false;
+        }
+      } else {
+        stack.push(tagName);
+      }
+    }
+
+    return stack.length === 0;
   };
+
+  const handlePreview = (rawText: string) => {
+    if (validateTags(rawText)) {
+      setPreviewText(sanitizeHTML(rawText));
+      setTextError('');
+    } else {
+      setTextError(`Incorrect tag nesting or unclosed tags!`);
+    }
+  };
+
 
   const validateImage = (fileList?: FileList) => {
     if (!fileList || fileList.length === 0) return true;
@@ -158,7 +209,9 @@ export default function CommentForm({
 
   const insertTag = (tag: string) => {
     const textarea = document.getElementById(`textArea${parentCommentId}`) as HTMLTextAreaElement;
-    if (!textarea) return;
+    if (!textarea) {
+      return;
+    }
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -180,6 +233,10 @@ export default function CommentForm({
 
     const inputEvent = new Event('input', { bubbles: true });
     textarea.dispatchEvent(inputEvent);
+
+    textarea.focus();
+
+    setPreviewText(newText);
   };
 
 
@@ -301,13 +358,13 @@ export default function CommentForm({
         >
           Link
         </button>
-        <button
+        {/* <button
           className="comment-form__toolbar-button"
           type="button"
           onClick={handlePreview}
         >
           Preview
-        </button>
+        </button> */}
       </div>
 
       <div className="comment-form__field">
@@ -316,6 +373,9 @@ export default function CommentForm({
           className="comment-form__textarea"
           placeholder="Comment text"
           {...register('text', { required: true })}
+          // onInput={(e) => setPreviewText((e.target as HTMLTextAreaElement).value)}
+          // onInput={handlePreview}
+          onInput={(e) => handlePreview((e.target as HTMLTextAreaElement).value)}
         ></textarea>
         <MotionWrapper animationType='slide'>
           {errors.text && (
@@ -326,7 +386,14 @@ export default function CommentForm({
 
       <div className="comment-form__preview">
         <h3 className="comment-form__label">Preview:</h3>
-        <div dangerouslySetInnerHTML={{ __html: previewText }}></div>
+        {textError.length > 0 &&
+          <p className="comment-form__error">
+            <IoWarningOutline color='orange' size={20} />
+            {textError}
+          </p>
+        }
+        <div className='preview-html' dangerouslySetInnerHTML={{ __html: previewText }}>
+        </div>
       </div>
 
       <div className="comment-form__field">
