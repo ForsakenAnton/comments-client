@@ -2,10 +2,12 @@ FROM node:22 AS build
 
 WORKDIR /app
 
+COPY .env.docker .env
 COPY package.json package-lock.json ./
 RUN npm install
 
-COPY .env.docker .env
+COPY . .
+
 RUN npm run build
 
 FROM nginx:stable-alpine
