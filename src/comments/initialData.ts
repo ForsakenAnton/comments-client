@@ -13,7 +13,9 @@ export const initialPaginationMetadata: PaginationMetadata = {
 
 export const initialCommentsProviderValue: CommentsProviderValue = {
   comments: [],
-  setComments: () => { },
+  fetchComments: () => Promise.resolve(),
+  addComment: () => { },
+  loadChildrenComments: () => Promise.resolve(null),
   loading: false,
   setLoading: () => { },
   fetchError: false,

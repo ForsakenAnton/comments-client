@@ -99,7 +99,7 @@ function Comment({ comment }: Readonly<CommentProps>) {
             className="text-modal-overlay"
             onClick={() => setIsTextModalOpen(false)}
             role="button"
-            tabIndex="0"
+            tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === "Escape") {
                 setIsTextModalOpen(false);
@@ -110,7 +110,7 @@ function Comment({ comment }: Readonly<CommentProps>) {
               className="text-modal"
               onClick={(e) => e.stopPropagation()}
               role="button"
-              tabIndex="0"
+              tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === "Escape") {
                   setIsTextModalOpen(false);

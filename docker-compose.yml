@@ -1,0 +1,8 @@
+services:
+  comments-client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: comments-client
+    ports:
+      - "3000:80"
