@@ -1,5 +1,4 @@
-// const API_BASE_URL = "https://localhost:7092";
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://localhost:7092";
 const COMMENTS_SEGMENT = "api/comments";
 
 export const apiPaths = {
