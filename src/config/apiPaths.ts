@@ -1,5 +1,9 @@
-// const API_BASE_URL = "https://localhost:7092";
-const API_BASE_URL = "http://localhost:7092";
+// const API_BASE_URL = "https://localhost:7092"; // local
+// const API_BASE_URL = "http://localhost:7092"; // docker
+// const API_BASE_URL = "http://azure.qwerty"; // azure
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+console.log("API_BASE_URL: ", API_BASE_URL);
 const COMMENTS_SEGMENT = "api/comments";
 
 export const apiPaths = {

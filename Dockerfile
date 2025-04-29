@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 
-COPY . .
+COPY .env.docker .env
 RUN npm run build
 
 FROM nginx:stable-alpine
