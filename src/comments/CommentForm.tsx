@@ -397,6 +397,7 @@ export default function CommentForm({
       </div>
 
       <div className="comment-form__field">
+        <label htmlFor="imageFile" className="comment-form__label">Image</label>
         <input
           id="imageFile"
           type="file"
@@ -412,6 +413,7 @@ export default function CommentForm({
       </div>
 
       <div className="comment-form__field">
+        <label htmlFor="textFile" className="comment-form__label">Text file</label>
         <input
           id="textFile"
           type="file"

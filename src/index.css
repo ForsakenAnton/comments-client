@@ -889,8 +889,8 @@ button {
 .comment-form__label {
   font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: var(--margin-md);
-  color: var(--lime-600);
+  margin-bottom: var(--margin-xs);
+  color: var(--gray-800);
 }
 
 .comment-form__toolbar {
