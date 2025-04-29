@@ -1,54 +1,49 @@
-# React + TypeScript + Vite
+Client Documentation – Коментарі з вкладеністю, CAPTCHA та реєстрацією
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Клієнт надає можливість взаємодіяти з деревом коментарів, яке включає вкладені відповіді, а також забезпечує механізм перевірки CAPTCHA та реєстрації користувачів під час додавання коментаря.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+=> Огляд функціоналу (коротко)
 
-## Expanding the ESLint configuration
+- Отримання кореневих коментарів з відповідями (вкладеність).
+- Отримання відповідей на конкретний коментар.
+- Додавання нового коментаря з підтримкою CAPTCHA, зображень та текстових файлів.
+- Динамічна реєстрація користувачів під час додавання коментаря.
+- Генерація графічної CAPTCHA (сервер).
+- Валідація вхідних даних на стороні клієнта (та сервера).
+- HTML-санітизація тексту коментаря (видалення небезпечних тегів, також це вміє сервер).
+- Підтримка сторінкової навігації з можливістю вибрати кількість кореневих коментарів на сторінці.
+- Підтримка сортування даних.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
+У проєкті використовував:
+```json
+  "dependencies": {
+    "boring-avatars": "^1.11.2",
+    "dompurify": "^3.2.5",
+    "framer-motion": "^12.9.1",
+    "immer": "^10.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.56.1",
+    "react-icons": "^5.5.0",
+    "react-toastify": "^11.0.5",
+    "use-immer": "^0.11.0",
+    "yet-another-react-lightbox": "^3.23.0"
   },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.3.1"
+  }
 ```
